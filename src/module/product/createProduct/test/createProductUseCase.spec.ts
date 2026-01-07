@@ -35,6 +35,7 @@ describe('US-1 : Créer un produit', () => {
     test('Scénario 2 : echec, titre trop court', async () => {
         //Étant donné qu'il n'y a pas de produit enregistré
         const createProductRepository = new CreateProductDummyRepository();
+
         const createProductUseCase = new CreateProductUseCase(createProductRepository);
 
         await expect(

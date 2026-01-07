@@ -20,7 +20,7 @@ export class CreateProductUseCase {
     }): Promise<void> {
 
 
-        const product = new Product(title, description, price);
+        const product = new Product({title, description, price});
 
         try {
             await this.productRepository.save(product);

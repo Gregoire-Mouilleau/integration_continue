@@ -23,7 +23,7 @@ export class Product {
         description: string;
         price: number;
     }) {
-        this.validatePrice(price);
+        this.checkPrice(price);
         this.validateTitle(title);
         this.title = title;
         this.description = description;
@@ -31,7 +31,7 @@ export class Product {
     }
 
     update(title: string, description: string, price: number) {
-        this.validatePrice(price);
+        this.checkPrice(price);
         this.validateTitle(title);
 
         this.title = title;
@@ -45,7 +45,7 @@ export class Product {
         }
     }
 
-    private validatePrice(price: number) {
+    private checkPrice(price: number) {
         if (price <= 0) {
             throw new Error('le prix doit être supérieur à 0');
         }
