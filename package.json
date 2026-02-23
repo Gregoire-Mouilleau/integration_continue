@@ -6,6 +6,8 @@
     "dev": "nodemon index.ts",
     "start": "node index.js",
     "test": "jest --config ./jest.config.js --watch",
+    "test:unit": "jest --config ./jest.config.js --testPathPatterns='\\.spec\\.ts$' --testPathIgnorePatterns='\\.e2e\\.spec\\.ts$'",
+    "test:e2e": "jest --config ./jest.config.js --testPathPatterns='\\.e2e\\.spec\\.ts$'",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
