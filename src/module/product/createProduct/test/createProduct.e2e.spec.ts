@@ -133,4 +133,117 @@ describe('US-1 : Créer un produit - E2E', () => {
         const products = await dataSource.getRepository(Product).find();
         expect(products).toHaveLength(0);
     });
+
+    test('Scénario 5: création échouée - titre supérieur à 20 caractères', async () => {
+        // Étant donné qu'il n'y a pas de produit enregistré
+        await dataSource.getRepository(Product).clear();
+
+        // Quand je créé un produit avec un titre de plus de 20 caractères
+        const response = await request(app)
+            .post('/api/product')
+            .send({
+                title: '123456789012345678901',
+                description: 'nouvelle console',
+                price: 500
+            })
+            .set('Content-Type', 'application/json');
+
+        // Alors une erreur doit être envoyée «le titre doit faire 20 caractères max»
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('le titre doit faire 20 caractères max');
+
+        const products = await dataSource.getRepository(Product).find();
+        expect(products).toHaveLength(0);
+    });
+
+    test('Scénario 6: création échouée - description contient @', async () => {
+        // Étant donné qu'il n'y a pas de produit enregistré
+        await dataSource.getRepository(Product).clear();
+
+        // Quand je créé un produit avec une description contenant '@'
+        const response = await request(app)
+            .post('/api/product')
+            .send({
+                title: 'switch',
+                description: 'nouvelle console@gmail.com',
+                price: 500
+            })
+            .set('Content-Type', 'application/json');
+
+        // Alors une erreur doit être envoyée «la description ne doit pas contenir "@"»
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('la description ne doit pas contenir "@"');
+
+        // Vérification qu'aucun produit n'a été créé
+        const products = await dataSource.getRepository(Product).find();
+        expect(products).toHaveLength(0);
+    });
+
+    /*
+     * Règle : le titre ne commence pas par un espace
+     *
+     * Scénario 7 : Création réussie (titre sans espace initial)
+     *
+     * Quand je crée un produit avec :
+     *   titre : «switch»
+     *   description : «nouvelle console»
+     *   prix : 500
+     *
+     * Alors le produit est créé
+     *
+     *
+     * Scénario 8 : Création échouée (titre commençant par un espace)
+     *
+     * Quand je crée un produit avec :
+     *   titre : « switch» (commence par un espace)
+     *   description : «nouvelle console»
+     *   prix : 500
+     *
+     * Alors le produit n'est pas créé
+     * Et je suis informé de l'erreur «le titre ne doit pas commencer par un espace»
+     */
+
+    test('Scénario 7: création réussie - titre sans espace initial', async () => {
+        // Étant donné qu'il n'y a pas de produit enregistré
+        await dataSource.getRepository(Product).clear();
+
+        // Quand je créé un produit avec en titre «switch» (sans espace initial)
+        const response = await request(app)
+            .post('/api/product')
+            .send({
+                title: 'switch',
+                description: 'nouvelle console',
+                price: 500
+            })
+            .set('Content-Type', 'application/json');
+
+        // Alors le produit doit être créé
+        expect(response.status).toBe(201);
+        const products = await dataSource.getRepository(Product).find();
+        expect(products).toHaveLength(1);
+        expect(products[0].title).toBe('switch');
+    });
+
+    test('Scénario 8: création échouée - titre commence par un espace', async () => {
+        // Étant donné qu'il n'y a pas de produit enregistré
+        await dataSource.getRepository(Product).clear();
+
+        // Quand je créé un produit avec en titre « switch» (commence par un espace)
+        const response = await request(app)
+            .post('/api/product')
+            .send({
+                title: ' switch',
+                description: 'nouvelle console',
+                price: 500
+            })
+            .set('Content-Type', 'application/json');
+
+        // Alors une erreur doit être envoyée «le titre ne doit pas commencer par un espace»
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('le titre ne doit pas commencer par un espace');
+
+        // Vérification qu'aucun produit n'a été créé
+        const products = await dataSource.getRepository(Product).find();
+        expect(products).toHaveLength(0);
+    });
 });

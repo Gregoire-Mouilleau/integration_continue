@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
+const MAX_TITLE_LENGTH = 20;
+
 @Entity()
 export class Product {
     @PrimaryGeneratedColumn()
@@ -23,16 +25,17 @@ export class Product {
         description: string;
         price: number;
     }) {
-        this.checkPrice(price);
-        this.validateTitle(title);
-        this.title = title;
-        this.description = description;
-        this.price = price;
+        this.applyChanges(title, description, price);
     }
 
     update(title: string, description: string, price: number) {
+        this.applyChanges(title, description, price);
+    }
+
+    private applyChanges(title: string, description: string, price: number) {
         this.checkPrice(price);
         this.validateTitle(title);
+        this.validateDescription(description);
 
         this.title = title;
         this.description = description;
@@ -40,8 +43,22 @@ export class Product {
     }
 
     private validateTitle(title: string) {
+        if (title.startsWith(' ')) {
+            throw new Error('le titre ne doit pas commencer par un espace');
+        }
+
         if (title.length < 3) {
             throw new Error('titre trop court');
+        }
+
+        if (title.length > MAX_TITLE_LENGTH) {
+            throw new Error('le titre doit faire 20 caractères max');
+        }
+    }
+
+    private validateDescription(description: string) {
+        if (description.includes('@')) {
+            throw new Error('la description ne doit pas contenir "@"');
         }
     }
 
