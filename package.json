@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.ts",
+    "build": "tsc",
     "start": "node index.js",
     "test": "jest --config ./jest.config.js --watch",
     "test:unit": "jest --config ./jest.config.js --testPathPatterns='\\.spec\\.ts$' --testPathIgnorePatterns='\\.e2e\\.spec\\.ts$'",
